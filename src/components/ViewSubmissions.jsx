@@ -63,6 +63,12 @@ const ViewSubmissions = () => {
           </CardHeader>
           <CardContent>
             <p className="text-center mb-4">Please wait while we redirect you to login...</p>
+            <Button 
+              onClick={() => instance.loginRedirect(loginRequest)} 
+              className="w-full"
+            >
+              Login with Microsoft 365
+            </Button>
           </CardContent>
         </Card>
       </div>
