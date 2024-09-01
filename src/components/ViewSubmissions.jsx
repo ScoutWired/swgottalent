@@ -18,13 +18,7 @@ const ViewSubmissions = () => {
     const checkAndSetAuth = async () => {
       setIsLoading(true);
       if (!isAuthenticated && accounts.length === 0) {
-        // No authenticated user, initiate login
-        try {
-          await instance.loginRedirect(loginRequest);
-        } catch (error) {
-          console.error('Login failed:', error);
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       } else if (isAuthenticated && location.pathname === '/auth-redirect') {
         navigate('/submissions');
       } else {
@@ -40,6 +34,15 @@ const ViewSubmissions = () => {
     queryFn: getSubmissions,
     enabled: isAuthenticated,
   });
+
+  const handleLogin = async () => {
+    try {
+      await instance.loginRedirect(loginRequest);
+    } catch (error) {
+      console.error('Login failed:', error);
+      alert('Login failed. Please try again.');
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -62,9 +65,9 @@ const ViewSubmissions = () => {
             <CardTitle className="text-center">Authentication Required</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-center mb-4">Please wait while we redirect you to login...</p>
+            <p className="text-center mb-4">Please log in to view submissions.</p>
             <Button 
-              onClick={() => instance.loginRedirect(loginRequest)} 
+              onClick={handleLogin} 
               className="w-full"
             >
               Login with Microsoft 365
