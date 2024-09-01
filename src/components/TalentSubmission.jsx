@@ -24,6 +24,7 @@ const TalentSubmission = () => {
   const [videoFile, setVideoFile] = useState(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState(null);
   const [isUnder18DialogOpen, setIsUnder18DialogOpen] = useState(false);
+  const [releaseForm, setReleaseForm] = useState(null);
   const isUnder18 = watch("isUnder18");
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -53,12 +54,22 @@ const TalentSubmission = () => {
       return;
     }
 
+    if (!releaseForm) {
+      toast({
+        title: "Release Form Required",
+        description: "Please upload the signed release form before submitting.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const formData = new FormData();
     for (const key in data) {
       formData.append(key, data[key]);
     }
     formData.append('signature', signature);
     formData.append('video', videoFile);
+    formData.append('releaseForm', releaseForm);
     mutation.mutate(formData);
   };
 
@@ -71,6 +82,13 @@ const TalentSubmission = () => {
   const clearSignature = () => {
     signatureRef.current.clear();
     setSignature(null);
+  };
+
+  const handleReleaseFormUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setReleaseForm(file);
+    }
   };
 
   return (
@@ -139,6 +157,23 @@ const TalentSubmission = () => {
             </ol>
           </div>
         </div>
+
+        <div>
+          <Label>Release Form</Label>
+          <div className="mb-2">
+            <a href="/release-form.pdf" download className="text-blue-600 hover:underline">
+              Download Release Form
+            </a>
+          </div>
+          <Input 
+            type="file" 
+            accept=".pdf,.doc,.docx" 
+            onChange={handleReleaseFormUpload} 
+            required 
+          />
+          {releaseForm && <p className="text-sm text-green-600 mt-1">Release form uploaded successfully</p>}
+        </div>
+
         <div>
           <Label>{isUnder18 ? "Parent/Guardian E-Signature" : "E-Signature"}</Label>
           <div className="border border-gray-300 rounded-md p-2">
@@ -154,7 +189,7 @@ const TalentSubmission = () => {
           </div>
         </div>
 
-        <Button type="submit" disabled={mutation.isPending || !videoFile} className="w-full">
+        <Button type="submit" disabled={mutation.isPending || !videoFile || !releaseForm} className="w-full">
           {mutation.isPending ? "Submitting..." : "Submit Your Talent"}
         </Button>
       </form>
