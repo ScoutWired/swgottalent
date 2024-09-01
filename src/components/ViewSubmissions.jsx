@@ -6,6 +6,7 @@ import { getSubmissions } from '@/lib/api';
 import { useMsal, useIsAuthenticated } from "@azure/msal-react";
 import { loginRequest } from '@/lib/samlAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useToast } from "@/components/ui/use-toast";
 
 const ViewSubmissions = () => {
   const { instance, accounts } = useMsal();
@@ -13,6 +14,7 @@ const ViewSubmissions = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
 
   useEffect(() => {
     const checkAndSetAuth = async () => {
@@ -40,7 +42,11 @@ const ViewSubmissions = () => {
       await instance.loginRedirect(loginRequest);
     } catch (error) {
       console.error('Login failed:', error);
-      alert('Login failed. Please try again.');
+      toast({
+        title: "Login Failed",
+        description: `Error: ${error.message}. Please try again.`,
+        variant: "destructive",
+      });
     }
   };
 
@@ -49,7 +55,11 @@ const ViewSubmissions = () => {
       await instance.logoutRedirect();
     } catch (error) {
       console.error('Logout failed:', error);
-      alert('Logout failed. Please try again.');
+      toast({
+        title: "Logout Failed",
+        description: `Error: ${error.message}. Please try again.`,
+        variant: "destructive",
+      });
     }
   };
 

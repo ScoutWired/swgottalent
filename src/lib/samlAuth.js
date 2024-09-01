@@ -13,7 +13,18 @@ export const msalConfig = {
 };
 
 export const loginRequest = {
-  scopes: ["user.read"]
+  scopes: ["User.Read"]
 };
 
 export const msalInstance = new PublicClientApplication(msalConfig);
+
+// Initialize the MSAL application
+msalInstance.initialize().then(() => {
+  // Select Account to sign in
+  const accounts = msalInstance.getAllAccounts();
+  if (accounts.length > 0) {
+    msalInstance.setActiveAccount(accounts[0]);
+  }
+}).catch((error) => {
+  console.error("Error initializing MSAL:", error);
+});
